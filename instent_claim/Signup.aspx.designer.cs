@@ -96,6 +96,15 @@ namespace instent_claim
         protected global::System.Web.UI.WebControls.TextBox txtPhoneNumber;
 
         /// <summary>
+        /// revPhoneNumber control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RegularExpressionValidator revPhoneNumber;
+
+        /// <summary>
         /// txtPassword control.
         /// </summary>
         /// <remarks>
@@ -150,13 +159,22 @@ namespace instent_claim
         protected global::System.Web.UI.WebControls.CompareValidator cvPassword;
 
         /// <summary>
+        /// cbTerms control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox cbTerms;
+
+        /// <summary>
         /// btnSignup control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnSignup;
+        protected global::System.Web.UI.WebControls.LinkButton btnSignup;
 
         /// <summary>
         /// btnGoogleSignup control.
@@ -165,6 +183,6 @@ namespace instent_claim
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnGoogleSignup;
+        protected global::System.Web.UI.WebControls.LinkButton btnGoogleSignup;
     }
 }
