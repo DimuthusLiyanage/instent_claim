@@ -32,7 +32,7 @@
         body {
             background: #f5f7fa;
             min-height: 100vh;
-            display: flex;
+            /*display: flex;*/
             color: #333;
             overflow-x: hidden;
             
