@@ -32,9 +32,10 @@
         body {
             background: #f5f7fa;
             min-height: 100vh;
-            display: flex;
+            /*display: flex;*/
             color: #333;
             overflow-x: hidden;
+            
         }
 
         /* Mobile Menu Toggle */
@@ -133,6 +134,7 @@
             flex: 1;
             margin-left: var(--sidebar-width);
             min-height: 100vh;
+           
             width: calc(100% - var(--sidebar-width));
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -779,6 +781,7 @@
 
             .header {
                 height: 60px;
+              
             }
 
             .welcome-banner {
