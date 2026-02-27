@@ -3,35 +3,32 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
 using System.Net.Http;
 using System.Net.Http.Headers;
-
+using System.Threading.Tasks;
+using System.Web;
 
 namespace instent_claim
 {
     public partial class WebForm2 : System.Web.UI.Page
     {
-        // Python API endpoint URL
+        // URL for your running Flask API
         private const string API_URL = "http://localhost:5000/api/predict";
 
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
-                // Initialize page
                 resultPanel.Visible = false;
             }
-
         }
+
         protected async void btnPredict_Click(object sender, EventArgs e)
         {
-            if (!fileUpload.HasFile)
+            // Validate that files are selected
+            if (!fileUpload.HasFiles)
             {
-                lblError.Text = "Please select an image file.";
+                lblError.Text = "Please select at least one image file.";
                 lblError.Visible = true;
                 return;
             }
@@ -39,109 +36,94 @@ namespace instent_claim
             try
             {
                 lblError.Visible = false;
-                resultPanel.Visible = false;
+                var allResults = new List<PredictionData>();
+                var displayList = new List<object>(); // Data source for the Repeater
 
-                // Get uploaded file
-                HttpPostedFile uploadedFile = fileUpload.PostedFile;
-
-                // Validate file type
-                string[] allowedExtensions = { ".jpg", ".jpeg", ".png" };
-                string fileExtension = Path.GetExtension(uploadedFile.FileName).ToLower();
-
-                if (Array.IndexOf(allowedExtensions, fileExtension) == -1)
+                // Process up to 5 images as requested
+                foreach (HttpPostedFile file in fileUpload.PostedFiles.Take(5))
                 {
-                    lblError.Text = "Invalid file type. Only JPG, JPEG, and PNG are allowed.";
-                    lblError.Visible = true;
-                    return;
+                    // 1. Generate Base64 for front-end preview
+                    byte[] fileBytes = new byte[file.ContentLength];
+                    file.InputStream.Read(fileBytes, 0, file.ContentLength);
+                    string base64String = Convert.ToBase64String(fileBytes);
+                    string imageSrc = $"data:{file.ContentType};base64,{base64String}";
+
+                    // 2. Call the Flask API using the file stream
+                    file.InputStream.Position = 0; // Reset stream position for the API call
+                    var apiResponse = await CallFlaskAPI(file);
+
+                    if (apiResponse != null && apiResponse.Success)
+                    {
+                        allResults.Add(apiResponse.Data);
+
+                        // Add to list for the Repeater gallery
+                        displayList.Add(new
+                        {
+                            ImageUrl = imageSrc,
+                            Class = apiResponse.Data.PredictedClass,
+                            Cost = apiResponse.Data.EstimatedCost
+                        });
+                    }
                 }
 
-                // Call Python API
-                var result = await CallPredictionAPI(uploadedFile);
-
-                if (result != null && result.Success)
+                if (allResults.Any())
                 {
-                    // Display results
-                    DisplayResults(result.Data, uploadedFile);
+                    // Bind data to the image gallery
+                    rptImages.DataSource = displayList;
+                    rptImages.DataBind();
+
+                    // Display aggregated totals in LKR
+                    lblPredictedClass.Text = string.Join(", ", allResults.Select(r => r.PredictedClass).Distinct());
+                    lblEstimatedCost.Text = $"Rs. {allResults.Sum(r => r.EstimatedCost):N0}";
+                    lblConfidence.Text = $"{allResults.Average(r => r.Confidence):F1}% (Avg)";
+
+                    resultPanel.Visible = true;
                 }
                 else
                 {
-                    lblError.Text = "Prediction failed: " + (result?.Error ?? "Unknown error");
+                    lblError.Text = "No valid analysis returned from the AI model.";
                     lblError.Visible = true;
                 }
             }
             catch (Exception ex)
             {
-                lblError.Text = "Error: " + ex.Message;
+                lblError.Text = "Error communicating with AI service: " + ex.Message;
                 lblError.Visible = true;
             }
         }
 
-        private async Task<ApiResponse> CallPredictionAPI(HttpPostedFile file)
+        private async Task<ApiResponse> CallFlaskAPI(HttpPostedFile file)
         {
             using (var client = new HttpClient())
             {
-                client.Timeout = TimeSpan.FromSeconds(30);
-
-                // Create multipart form data
                 using (var content = new MultipartFormDataContent())
                 {
-                    // Read file stream
                     byte[] fileBytes = new byte[file.ContentLength];
+                    file.InputStream.Position = 0;
                     file.InputStream.Read(fileBytes, 0, file.ContentLength);
 
-                    // Add file to form data
                     var fileContent = new ByteArrayContent(fileBytes);
                     fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse(file.ContentType);
                     content.Add(fileContent, "file", file.FileName);
 
-                    // Send POST request
                     var response = await client.PostAsync(API_URL, content);
-
                     if (response.IsSuccessStatusCode)
                     {
                         string jsonResponse = await response.Content.ReadAsStringAsync();
                         return JsonConvert.DeserializeObject<ApiResponse>(jsonResponse);
                     }
-                    else
-                    {
-                        string errorContent = await response.Content.ReadAsStringAsync();
-                        return new ApiResponse
-                        {
-                            Success = false,
-                            Error = $"API Error: {response.StatusCode} - {errorContent}"
-                        };
-                    }
+                    return null;
                 }
             }
         }
 
-        private void DisplayResults(PredictionData data, HttpPostedFile file)
-        {
-            // Display the uploaded image
-            byte[] fileBytes = new byte[file.ContentLength];
-            file.InputStream.Position = 0;
-            file.InputStream.Read(fileBytes, 0, file.ContentLength);
-            string base64Image = Convert.ToBase64String(fileBytes);
-            imgPreview.ImageUrl = $"data:{file.ContentType};base64,{base64Image}";
-
-            // Display prediction results with LKR formatting
-            lblPredictedClass.Text = data.PredictedClass;
-            lblEstimatedCost.Text = $"Rs. {data.EstimatedCost:N0}"; // LKR format with comma separator
-            lblConfidence.Text = $"{data.Confidence}%";
-
-            // Show result panel
-            resultPanel.Visible = true;
-        }
-
-        #region Helper Classes for JSON Deserialization
+        #region Helper Classes for JSON Mapping
         public class ApiResponse
         {
             [JsonProperty("success")]
             public bool Success { get; set; }
-
             [JsonProperty("data")]
             public PredictionData Data { get; set; }
-
             [JsonProperty("error")]
             public string Error { get; set; }
         }
@@ -150,17 +132,11 @@ namespace instent_claim
         {
             [JsonProperty("predicted_class")]
             public string PredictedClass { get; set; }
-
             [JsonProperty("estimated_cost")]
             public decimal EstimatedCost { get; set; }
-
             [JsonProperty("confidence")]
             public decimal Confidence { get; set; }
-
-            [JsonProperty("all_predictions")]
-            public Dictionary<string, decimal> AllPredictions { get; set; }
         }
-
         #endregion
     }
 }
