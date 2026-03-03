@@ -217,6 +217,7 @@
     <Content Include="Content\bootstrap-grid.css.map" />
     <Content Include="Default.aspx" />
     <Content Include="NewClaim.aspx" />
+    <Content Include="MyClaim.aspx" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
@@ -317,6 +318,13 @@
     </Compile>
     <Compile Include="NewClaim.aspx.designer.cs">
       <DependentUpon>NewClaim.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="MyClaim.aspx.cs">
+      <DependentUpon>MyClaim.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="MyClaim.aspx.designer.cs">
+      <DependentUpon>MyClaim.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

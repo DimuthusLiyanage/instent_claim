@@ -156,6 +156,15 @@
             display: block;
             border: 1px solid #ffdada;
         }
+        .success-msg {
+    color: #1cc88a;
+    background: #f0fff8;
+    padding: 1rem;
+    border-radius: 5px;
+    margin-top: 1rem;
+    display: block;
+    border: 1px solid #b2f0d8;
+}
     </style>
 </asp:Content>
 
