@@ -218,6 +218,7 @@
     <Content Include="Default.aspx" />
     <Content Include="NewClaim.aspx" />
     <Content Include="MyClaim.aspx" />
+    <Content Include="Help.aspx" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
@@ -325,6 +326,13 @@
     </Compile>
     <Compile Include="MyClaim.aspx.designer.cs">
       <DependentUpon>MyClaim.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Help.aspx.cs">
+      <DependentUpon>Help.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Help.aspx.designer.cs">
+      <DependentUpon>Help.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
