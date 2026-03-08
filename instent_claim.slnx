@@ -1,4 +1,4 @@
 <Solution>
   <Project Path="instent_claim/instent_claim.csproj" Id="07b38db9-0d24-4bcb-9b26-990070d9a2dc" />
-  <Project Path="test/Predict Test/Predict Test.csproj" Id="495eeaed-4c3e-427e-b42b-5a17c0893717" />
+  <Project Path="Unit Test/UnitTest/UnitTest.csproj" Id="0dd0c794-a8e7-4a49-b351-4f9a2503cddb" />
 </Solution>
