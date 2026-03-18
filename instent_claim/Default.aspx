@@ -222,7 +222,7 @@
                 <i class="fas fa-bolt"></i> Quick Actions
             </h3>
             <div class="actions-grid">
-                <a href="WebForm2.aspx" class="action-btn"><i class="fas fa-plus"></i> <span>New Claim</span></a>
+                <a href="NewClaim.aspx" class="action-btn"><i class="fas fa-plus"></i> <span>New Claim</span></a>
                 <a href="MyClaim.aspx" class="action-btn"><i class="fas fa-file-invoice"></i> <span>View Claims</span></a>
                 <a href="#" class="action-btn"><i class="fas fa-chart-pie"></i> <span>Analytics</span></a>
                 <a href="#" class="action-btn"><i class="fas fa-download"></i> <span>Export Reports</span></a>
